@@ -28,3 +28,6 @@ CI/CD Pipeline: Automate deployments for Kubernetes applications.
 Data Processing: Use Kubernetes to process large data workloads with tools like Spark.
 Multi-Region Cluster Setup: Build a resilient, multi-region Kubernetes architecture.
 
+# YAML USES :- Uses for Kubernetes Deployment.
+# A YAML (YAML Ain't Markup Language) file serves as a configuration tool within Kubernetes, encompassing deployments, services, and various other resources. 
+
