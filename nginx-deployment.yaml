@@ -1,0 +1,87 @@
+# 1. Create an EKS Cluster
+Use the AWS CLI to create a new EKS cluster:
+
+bash
+Copy code
+aws eks create-cluster \
+    --name my-eks-cluster \
+    --region us-west-2 \
+    --kubernetes-version 1.24 \
+    --role-arn arn:aws:iam::123456789012:role/EKS-ClusterRole \
+    --resources-vpc-config subnetIds=subnet-abc123,subnet-def456,subnet-ghi789,securityGroupIds=sg-01234abcd
+Replace the role-arn, subnetIds, and securityGroupIds with appropriate values from your AWS environment.
+
+# 2. Create Worker Nodes
+Set up worker nodes (Amazon EC2 instances) 
+
+bash
+Copy code
+aws eks create-nodegroup \
+    --cluster-name my-eks-cluster \
+    --nodegroup-name my-node-group \
+    --scaling-config minSize=1,maxSize=3,desiredSize=2 \
+    --disk-size 20 \
+    --subnets subnet-abc123 subnet-def456 \
+    --instance-types t3.medium \
+    --node-role arn:aws:iam::123456789012:role/EKS-WorkerNodeRole
+
+3. Update kubeconfig
+  Update the local kubeconfig to connect kubectl to the EKS cluster:
+
+  bash
+  Copy code
+  aws eks update-kubeconfig --region us-west-2 --name my-eks-cluster
+
+4. Deploy a Kubernetes Application
+Create a deployment YAML file (e.g., nginx-deployment.yaml):
+
+yaml
+Copy code
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21.6
+        ports:
+        - containerPort: 80
+
+
+  bash
+Copy code
+kubectl apply -f nginx-deployment.yaml
+
+5. Expose the Application
+
+ bash
+Copy code
+    kubectl expose deployment nginx-deployment --type=LoadBalancer --name=nginx-service
+ Retrieve the LoadBalancer's public URL:
+
+ bash
+Copy code
+kubectl get service nginx-service
+6. Monitor the Cluster
+
+
+ bash
+Copy code
+    kubectl get nodes
+
+
+bash
+Copy code
+kubectl get pods
